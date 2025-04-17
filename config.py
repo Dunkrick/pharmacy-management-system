@@ -6,11 +6,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     # Flask configuration
-    SECRET_KEY = 'your-secret-key-here'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key-here'
     
     # SQLAlchemy configuration
     # Use absolute path for the database
-    SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(basedir, "instance", "pharmacy.db")}'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or f'sqlite:///{os.path.join(basedir, "instance", "pharmacy.db")}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # Session configuration

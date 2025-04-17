@@ -1,21 +1,16 @@
-{% macro render_pagination(pagination, endpoint) %}
-    {% if pagination.pages > 1 %}
+{% macro render_pagination(pagination, endpoint, search='') %}
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
-            {% if pagination.has_prev %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}">Previous</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">Previous</span>
-                </li>
-            {% endif %}
-
+            <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, search=search) if pagination.has_prev else '#' }}">
+                    Previous
+                </a>
+            </li>
+            
             {% for page in pagination.iter_pages() %}
                 {% if page %}
                     <li class="page-item {% if page == pagination.page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }}</a>
+                        <a class="page-link" href="{{ url_for(endpoint, page=page, search=search) }}">{{ page }}</a>
                     </li>
                 {% else %}
                     <li class="page-item disabled">
@@ -23,45 +18,28 @@
                     </li>
                 {% endif %}
             {% endfor %}
-
-            {% if pagination.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}">Next</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">Next</span>
-                </li>
-            {% endif %}
+            
+            <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, search=search) if pagination.has_next else '#' }}">
+                    Next
+                </a>
+            </li>
         </ul>
     </nav>
-    {% endif %}
 {% endmacro %}
 
-{% macro render_search_form(endpoint, placeholder="Search...", extra_filters={}) %}
-<form class="mb-4" method="GET" action="{{ url_for(endpoint) }}">
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="{{ placeholder }}"
-                       value="{{ request.args.get('search', '') }}">
-                <button class="btn btn-outline-secondary" type="submit">Search</button>
-            </div>
-        </div>
-        {% if extra_filters %}
-            {% for filter_name, filter_options in extra_filters.items() %}
-                <div class="col-md-3">
-                    <select name="{{ filter_name }}" class="form-select" onchange="this.form.submit()">
-                        <option value="">All {{ filter_name|title }}s</option>
-                        {% for option in filter_options %}
-                            <option value="{{ option }}" 
-                                    {% if request.args.get(filter_name) == option %}selected{% endif %}>
-                                {{ option }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% endfor %}
+{% macro render_search_form(search_value='', placeholder='Search...') %}
+<form method="GET" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" value="{{ search_value }}" 
+               placeholder="{{ placeholder }}">
+        <button class="btn btn-primary" type="submit">
+            <i class="fas fa-search"></i> Search
+        </button>
+        {% if search_value %}
+        <a href="{{ url_for(request.endpoint) }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Clear
+        </a>
         {% endif %}
     </div>
 </form>

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}View Prescription{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">Prescription Details</h3>
+                    <div>
+                        <a href="{{ url_for('main.edit_prescription', id=prescription.id) }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                        <a href="{{ url_for('main.prescriptions') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <p><strong>Name:</strong> {{ prescription.customer.name }}</p>
+                            <p><strong>Email:</strong> {{ prescription.customer.email }}</p>
+                            <p><strong>Phone:</strong> {{ prescription.customer.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Prescription Information</h5>
+                            <p><strong>Date:</strong> {{ prescription.prescription_date.strftime('%Y-%m-%d') }}</p>
+                            <p><strong>Doctor:</strong> {{ prescription.doctor_name }}</p>
+                            <p><strong>Notes:</strong> {{ prescription.notes or 'No notes' }}</p>
+                        </div>
+                    </div>
+
+                    <h5>Prescribed Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Quantity</th>
+                                    <th>Instructions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in prescription.items %}
+                                <tr>
+                                    <td>{{ item.medicine.name }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.instructions or 'No specific instructions' }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No items in this prescription</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

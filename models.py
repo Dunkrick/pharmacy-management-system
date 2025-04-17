@@ -5,6 +5,8 @@ from sqlalchemy.orm import validates
 from sqlalchemy import CheckConstraint, event, text
 import re
 from extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 class Medicine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -285,4 +287,21 @@ def update_stock_after_sale(mapper, connection, target):
 def restore_stock_after_delete(mapper, connection, target):
     medicine = Medicine.query.get(target.medicine_id)
     if medicine:
-        medicine.stock_quantity += target.quantity 
+        medicine.stock_quantity += target.quantity
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    is_admin = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+        
+    def __repr__(self):
+        return f'<User {self.username}>' 

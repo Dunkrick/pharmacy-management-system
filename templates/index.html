@@ -3,35 +3,49 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Dashboard</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Dashboard Overview</h1>
+    <div class="text-muted">
+        <i class="fas fa-calendar me-1"></i> {{ now().strftime('%B %d, %Y') }}
+    </div>
+</div>
 
 <div class="row">
     <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card dashboard-card">
             <div class="card-body">
+                <i class="fas fa-pills fa-2x mb-3 text-primary"></i>
                 <h5 class="card-title">Medicines</h5>
-                <p class="card-text">Total: {{ medicine_count }}</p>
-                <a href="{{ url_for('main.medicines') }}" class="btn btn-primary">View Medicines</a>
+                <p class="card-text">{{ medicine_count }}</p>
+                <a href="{{ url_for('main.medicines') }}" class="btn btn-outline-primary btn-sm">
+                    View Medicines <i class="fas fa-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>
     
     <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card dashboard-card">
             <div class="card-body">
+                <i class="fas fa-users fa-2x mb-3 text-success"></i>
                 <h5 class="card-title">Customers</h5>
-                <p class="card-text">Total: {{ customer_count }}</p>
-                <a href="{{ url_for('main.customers') }}" class="btn btn-primary">View Customers</a>
+                <p class="card-text">{{ customer_count }}</p>
+                <a href="{{ url_for('main.customers') }}" class="btn btn-outline-success btn-sm">
+                    View Customers <i class="fas fa-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>
     
     <div class="col-md-4 mb-4">
-        <div class="card">
+        <div class="card dashboard-card">
             <div class="card-body">
+                <i class="fas fa-user-md fa-2x mb-3 text-info"></i>
                 <h5 class="card-title">Employees</h5>
-                <p class="card-text">Total: {{ employee_count }}</p>
-                <a href="{{ url_for('main.employees') }}" class="btn btn-primary">View Employees</a>
+                <p class="card-text">{{ employee_count }}</p>
+                <a href="{{ url_for('main.employees') }}" class="btn btn-outline-info btn-sm">
+                    View Employees <i class="fas fa-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -39,21 +53,27 @@
 
 <div class="row">
     <div class="col-md-6 mb-4">
-        <div class="card">
+        <div class="card dashboard-card">
             <div class="card-body">
+                <i class="fas fa-prescription fa-2x mb-3 text-warning"></i>
                 <h5 class="card-title">Prescriptions</h5>
-                <p class="card-text">Total: {{ prescription_count }}</p>
-                <a href="{{ url_for('main.prescriptions') }}" class="btn btn-primary">View Prescriptions</a>
+                <p class="card-text">{{ prescription_count }}</p>
+                <a href="{{ url_for('main.prescriptions') }}" class="btn btn-outline-warning btn-sm">
+                    View Prescriptions <i class="fas fa-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>
     
     <div class="col-md-6 mb-4">
-        <div class="card">
+        <div class="card dashboard-card">
             <div class="card-body">
+                <i class="fas fa-cash-register fa-2x mb-3 text-danger"></i>
                 <h5 class="card-title">Sales</h5>
-                <p class="card-text">Total: {{ sale_count }}</p>
-                <a href="{{ url_for('main.sales') }}" class="btn btn-primary">View Sales</a>
+                <p class="card-text">{{ sale_count }}</p>
+                <a href="{{ url_for('main.sales') }}" class="btn btn-outline-danger btn-sm">
+                    View Sales <i class="fas fa-arrow-right ms-1"></i>
+                </a>
             </div>
         </div>
     </div>

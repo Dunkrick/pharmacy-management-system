@@ -15,20 +15,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Setup number formatting
     setupNumberFormatting();
+    
+    // Setup medicine search
+    setupMedicineSearch();
+    
+    // Setup date inputs
+    setupDateInputs();
 });
 
 function initializeBootstrapComponents() {
     // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    if (typeof bootstrap !== 'undefined') {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
 
-    // Initialize popovers
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-    popoverTriggerList.forEach(function (popoverTriggerEl) {
-        new bootstrap.Popover(popoverTriggerEl);
-    });
+        // Initialize popovers
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        popoverTriggerList.forEach(function (popoverTriggerEl) {
+            new bootstrap.Popover(popoverTriggerEl);
+        });
+    }
 }
 
 function setupFormValidation() {
@@ -63,11 +71,16 @@ function setupAutoHidingAlerts() {
     var alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
     alerts.forEach(function(alert) {
         setTimeout(function() {
-            alert.style.transition = 'opacity 0.5s ease-in-out';
-            alert.style.opacity = '0';
-            setTimeout(function() {
-                alert.remove();
-            }, 500);
+            if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            } else {
+                alert.style.transition = 'opacity 0.5s ease-in-out';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            }
         }, 5000);
     });
 }
@@ -106,6 +119,71 @@ function setupNumberFormatting() {
             }
         });
     });
+
+    // Handle medicine price formatting
+    var priceInputs = document.querySelectorAll('input[type="number"][step="0.01"]');
+    priceInputs.forEach(function(input) {
+        input.addEventListener('change', function() {
+            this.value = parseFloat(this.value).toFixed(2);
+        });
+    });
+
+    // Handle stock quantity warnings
+    var stockElements = document.querySelectorAll('.stock-quantity');
+    stockElements.forEach(function(element) {
+        var quantity = parseInt(element.dataset.quantity);
+        var reorderLevel = parseInt(element.dataset.reorderLevel);
+        
+        if (quantity <= reorderLevel) {
+            element.classList.add('text-danger', 'fw-bold');
+        } else if (quantity <= reorderLevel * 2) {
+            element.classList.add('text-warning');
+        }
+    });
+}
+
+function setupMedicineSearch() {
+    // Dynamic form handling for medicine search
+    var searchForm = document.querySelector('#medicine-search-form');
+    if (searchForm) {
+        var categorySelect = searchForm.querySelector('select[name="category"]');
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function() {
+                searchForm.submit();
+            });
+        }
+    }
+
+    // Dynamic search suggestions
+    var searchInput = document.querySelector('.search-medicine');
+    if (searchInput) {
+        var debounceTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(function() {
+                var searchTerm = searchInput.value;
+                if (searchTerm.length >= 2) {
+                    fetch(`/api/medicines/search?term=${encodeURIComponent(searchTerm)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            updateSearchSuggestions(data);
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            }, 300);
+        });
+    }
+}
+
+function setupDateInputs() {
+    var dateInputs = document.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(function(input) {
+        // Set default value to today if no value is set
+        if (!input.value) {
+            var today = new Date().toISOString().split('T')[0];
+            input.value = today;
+        }
+    });
 }
 
 // Utility function to format currency
@@ -124,78 +202,6 @@ function formatDate(date) {
         day: 'numeric'
     }).format(new Date(date));
 }
-
-// Auto-hide flash messages after 5 seconds
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        var alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
-        alerts.forEach(function(alert) {
-            var bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 5000);
-});
-
-// Dynamic form handling for medicine search
-document.addEventListener('DOMContentLoaded', function() {
-    var searchForm = document.querySelector('#medicine-search-form');
-    if (searchForm) {
-        var categorySelect = searchForm.querySelector('select[name="category"]');
-        if (categorySelect) {
-            categorySelect.addEventListener('change', function() {
-                searchForm.submit();
-            });
-        }
-    }
-});
-
-// Handle medicine price formatting
-document.addEventListener('DOMContentLoaded', function() {
-    var priceInputs = document.querySelectorAll('input[type="number"][step="0.01"]');
-    priceInputs.forEach(function(input) {
-        input.addEventListener('change', function() {
-            this.value = parseFloat(this.value).toFixed(2);
-        });
-    });
-});
-
-// Handle stock quantity warnings
-document.addEventListener('DOMContentLoaded', function() {
-    var stockElements = document.querySelectorAll('.stock-quantity');
-    stockElements.forEach(function(element) {
-        var quantity = parseInt(element.dataset.quantity);
-        var reorderLevel = parseInt(element.dataset.reorderLevel);
-        
-        if (quantity <= reorderLevel) {
-            element.classList.add('text-danger', 'fw-bold');
-        } else if (quantity <= reorderLevel * 2) {
-            element.classList.add('text-warning');
-        }
-    });
-});
-
-// Dynamic search suggestions
-document.addEventListener('DOMContentLoaded', function() {
-    var searchInput = document.querySelector('.search-medicine');
-    if (searchInput) {
-        var debounceTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(function() {
-                var searchTerm = searchInput.value;
-                if (searchTerm.length >= 2) {
-                    fetch(`/api/medicines/search?term=${encodeURIComponent(searchTerm)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            // Handle search suggestions
-                            updateSearchSuggestions(data);
-                        })
-                        .catch(error => console.error('Error:', error));
-                }
-            }, 300);
-        });
-    }
-});
 
 // Update medicine price in sale form
 function updateMedicinePrice(selectElement) {
@@ -224,7 +230,27 @@ function updateTotal() {
     }
 }
 
-// Handle date inputs
-document.addEventListener('DOMContentLoaded', function() {
-    var dateInputs = document.querySelectorAll('input[type="date"]');
-    dateInputs
+// Function to update search suggestions
+function updateSearchSuggestions(data) {
+    var suggestionContainer = document.querySelector('#search-suggestions');
+    if (!suggestionContainer) {
+        suggestionContainer = document.createElement('div');
+        suggestionContainer.id = 'search-suggestions';
+        suggestionContainer.className = 'search-suggestions';
+        document.querySelector('.search-medicine').parentNode.appendChild(suggestionContainer);
+    }
+    
+    suggestionContainer.innerHTML = '';
+    if (data && data.length > 0) {
+        data.forEach(function(item) {
+            var div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = item.name;
+            div.addEventListener('click', function() {
+                document.querySelector('.search-medicine').value = item.name;
+                suggestionContainer.innerHTML = '';
+            });
+            suggestionContainer.appendChild(div);
+        });
+    }
+}

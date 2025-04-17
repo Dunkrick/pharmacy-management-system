@@ -3,51 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pharmacy Management System">
+    <meta name="theme-color" content="#2c3e50">
     <title>Pharmacy Management System - {% block title %}{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">Pharmacy Management</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="fas fa-clinic-medical me-2"></i>Pharmacy Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.medicines') }}">Medicines</a>
+                        <a class="nav-link {% if request.endpoint == 'main.medicines' %}active{% endif %}" href="{{ url_for('main.medicines') }}">
+                            <i class="fas fa-pills me-1"></i> Medicines
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.customers') }}">Customers</a>
+                        <a class="nav-link {% if request.endpoint == 'main.customers' %}active{% endif %}" href="{{ url_for('main.customers') }}">
+                            <i class="fas fa-users me-1"></i> Customers
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.employees') }}">Employees</a>
+                        <a class="nav-link {% if request.endpoint == 'main.employees' %}active{% endif %}" href="{{ url_for('main.employees') }}">
+                            <i class="fas fa-user-md me-1"></i> Employees
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.suppliers') }}">Suppliers</a>
+                        <a class="nav-link {% if request.endpoint == 'main.prescriptions' %}active{% endif %}" href="{{ url_for('main.prescriptions') }}">
+                            <i class="fas fa-prescription me-1"></i> Prescriptions
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.prescriptions') }}">Prescriptions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.sales') }}">Sales</a>
+                        <a class="nav-link {% if request.endpoint == 'main.sales' %}active{% endif %}" href="{{ url_for('main.sales') }}">
+                            <i class="fas fa-cash-register me-1"></i> Sales
+                        </a>
                     </li>
                 </ul>
+                {% if current_user.is_authenticated %}
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> {{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -55,15 +99,18 @@
         {% block content %}{% endblock %}
     </div>
 
-    <footer class="footer mt-auto py-3 bg-light">
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3">
         <div class="container text-center">
-            <span class="text-muted">Pharmacy Management System &copy; {{ ''|current_year }}</span>
+            <span class="text-muted">
+                <i class="fas fa-heart text-danger me-1"></i>
+                Pharmacy Management System &copy; {{ now().year }}
+            </span>
         </div>
     </footer>
 
-    <!-- JavaScript Bundle -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
