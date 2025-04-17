@@ -2,7 +2,7 @@ services:
   - type: web
     name: pharmacy-management
     env: python
-    buildCommand: pip install -r requirements.txt && flask db upgrade
+    buildCommand: chmod +x deploy.sh && ./deploy.sh
     startCommand: gunicorn wsgi:app
     python_version: 3.11.11
     envVars:

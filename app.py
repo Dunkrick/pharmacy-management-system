@@ -1,5 +1,6 @@
 from flask import Flask
 from extensions import db, login_manager, migrate, csrf
+from flask_migrate import Migrate
 from datetime import datetime
 import os
 from dotenv import load_dotenv
@@ -31,8 +32,10 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-    migrate.init_app(app, db)
     csrf.init_app(app)
+    
+    # Initialize Flask-Migrate
+    migrate.init_app(app, db)
     
     with app.app_context():
         # Import models to ensure they're known to Flask-SQLAlchemy

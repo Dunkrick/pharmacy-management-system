@@ -4,14 +4,12 @@ from wtforms.validators import DataRequired, Email, Length, NumberRange, Optiona
 from wtforms.fields import DateField, DateTimeField
 from datetime import date, datetime
 import re
-from bleach import clean
-from models import User
 
-def sanitize_string(value):
-    """Sanitize string input to prevent XSS"""
-    if value:
-        return clean(value, strip=True)
-    return value
+def clean_data(data):
+    if data:
+        # Simple HTML tag removal
+        return str(data).replace('<', '&lt;').replace('>', '&gt;')
+    return data
 
 class BaseForm(FlaskForm):
     """Base form class with CSRF protection and common methods"""
@@ -23,7 +21,7 @@ class BaseForm(FlaskForm):
         """Sanitize form data before validation"""
         for field in self._fields.values():
             if isinstance(field.data, str):
-                field.data = sanitize_string(field.data)
+                field.data = clean_data(field.data)
 
     def validate(self):
         """Override validate to include sanitization"""
@@ -58,8 +56,8 @@ class RegistrationForm(FlaskForm):
         return str(field_data).strip()
 
 class MedicineForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
-    description = TextAreaField('Description', validators=[Optional()])
+    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=100)])
+    description = TextAreaField('Description')
     manufacturer = StringField('Manufacturer', validators=[DataRequired()])
     category = StringField('Category', validators=[DataRequired()])
     price = FloatField('Price', validators=[DataRequired(), NumberRange(min=0)])
@@ -67,24 +65,28 @@ class MedicineForm(FlaskForm):
     reorder_level = IntegerField('Reorder Level', validators=[DataRequired(), NumberRange(min=0)])
     expiry_date = DateField('Expiry Date', validators=[DataRequired()])
 
+    def validate_expiry_date(self, field):
+        if field.data < date.today():
+            raise ValidationError('Expiry date must be in the future')
+
 class CustomerForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
-    email = EmailField('Email', validators=[DataRequired(), Email()])
-    phone = TelField('Phone', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=100)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone', validators=[DataRequired()])
     address = TextAreaField('Address', validators=[DataRequired()])
 
 class EmployeeForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
-    email = EmailField('Email', validators=[DataRequired(), Email()])
-    phone = TelField('Phone', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=100)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone', validators=[DataRequired()])
     position = StringField('Position', validators=[DataRequired()])
-    hire_date = DateField('Hire Date', validators=[DataRequired()], default=date.today)
+    hire_date = DateField('Hire Date', validators=[DataRequired()])
 
 class PrescriptionForm(FlaskForm):
     customer_id = SelectField('Customer', coerce=int, validators=[DataRequired()])
     doctor_name = StringField('Doctor Name', validators=[DataRequired()])
-    prescription_date = DateField('Prescription Date', validators=[DataRequired()], default=date.today)
-    notes = TextAreaField('Notes', validators=[Optional()])
+    prescription_date = DateField('Prescription Date', validators=[DataRequired()])
+    notes = TextAreaField('Notes')
 
 class SaleForm(FlaskForm):
     customer_id = SelectField('Customer', coerce=int, validators=[DataRequired()])
