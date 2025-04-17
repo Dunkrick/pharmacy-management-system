@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Pharmacy Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Welcome Section -->
+    <div class="card mb-4 bg-primary text-white">
+        <div class="card-body py-5">
+            <h1 class="display-4 mb-3">Welcome to the Pharmacy Management System</h1>
+            <p class="lead">A comprehensive solution for managing your pharmacy operations efficiently and effectively.</p>
+        </div>
+    </div>
+
+    <!-- Quick Access Section -->
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-pills fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title h5">Medicines</h3>
+                    <p class="card-text">Manage your medicine inventory, prices, and stock levels.</p>
+                    <a href="{{ url_for('main.medicines') }}" class="btn btn-outline-primary">View Medicines</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x text-success mb-3"></i>
+                    <h3 class="card-title h5">Customers</h3>
+                    <p class="card-text">Maintain customer records and prescription history.</p>
+                    <a href="{{ url_for('main.customers') }}" class="btn btn-outline-success">View Customers</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-prescription fa-3x text-info mb-3"></i>
+                    <h3 class="card-title h5">Prescriptions</h3>
+                    <p class="card-text">Process and track patient prescriptions.</p>
+                    <a href="{{ url_for('main.prescriptions') }}" class="btn btn-outline-info">View Prescriptions</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-cash-register fa-3x text-warning mb-3"></i>
+                    <h3 class="card-title h5">Sales</h3>
+                    <p class="card-text">Manage sales transactions and records.</p>
+                    <a href="{{ url_for('main.sales') }}" class="btn btn-outline-warning">View Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Features -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title h4 mb-4">System Features</h2>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                <div>
+                                    <h5 class="h6">Inventory Management</h5>
+                                    <p class="text-muted small">Track stock levels, expiry dates, and automate reordering.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                <div>
+                                    <h5 class="h6">Sales Processing</h5>
+                                    <p class="text-muted small">Process sales quickly with automatic stock updates.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                                <div>
+                                    <h5 class="h6">Prescription Management</h5>
+                                    <p class="text-muted small">Digital prescription records and processing.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,68 @@
+{% macro render_pagination(pagination, endpoint) %}
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            {% endif %}
+
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for(endpoint, page=page, **kwargs) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_search_form(endpoint, placeholder="Search...", extra_filters={}) %}
+<form class="mb-4" method="GET" action="{{ url_for(endpoint) }}">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="{{ placeholder }}"
+                       value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </div>
+        {% if extra_filters %}
+            {% for filter_name, filter_options in extra_filters.items() %}
+                <div class="col-md-3">
+                    <select name="{{ filter_name }}" class="form-select" onchange="this.form.submit()">
+                        <option value="">All {{ filter_name|title }}s</option>
+                        {% for option in filter_options %}
+                            <option value="{{ option }}" 
+                                    {% if request.args.get(filter_name) == option %}selected{% endif %}>
+                                {{ option }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</form>
+{% endmacro %}

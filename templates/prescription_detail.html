@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Prescription Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Prescription #{{ prescription.id }}</h1>
+    <div>
+        <a href="{{ url_for('main.add_prescription_item', id=prescription.id) }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Add Medicine
+        </a>
+        <a href="{{ url_for('main.prescriptions') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Prescription Details</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Customer:</dt>
+                    <dd class="col-sm-8">{{ prescription.customer.name }}</dd>
+                    
+                    <dt class="col-sm-4">Doctor:</dt>
+                    <dd class="col-sm-8">{{ prescription.doctor_name }}</dd>
+                    
+                    <dt class="col-sm-4">Date:</dt>
+                    <dd class="col-sm-8">{{ prescription.prescription_date.strftime('%Y-%m-%d') }}</dd>
+                    
+                    {% if prescription.notes %}
+                    <dt class="col-sm-4">Notes:</dt>
+                    <dd class="col-sm-8">{{ prescription.notes }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Prescribed Medicines</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Quantity</th>
+                                <th>Instructions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in prescription.items %}
+                            <tr>
+                                <td>{{ item.medicine.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.instructions }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('main.delete_prescription_item', id=prescription.id, item_id=item.id) }}" 
+                                          class="d-inline" onsubmit="return confirm('Are you sure you want to remove this medicine?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times"></i> Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center">No medicines added to this prescription.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

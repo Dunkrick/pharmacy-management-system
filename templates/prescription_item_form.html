@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Add Medicine to Prescription{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="card-title mb-0">Add Medicine to Prescription #{{ prescription.id }}</h2>
+                <a href="{{ url_for('main.view_prescription', id=prescription.id) }}" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Prescription
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.csrf_token }}
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.medicine_id.label(class="form-label") }}
+                                {{ form.medicine_id(class="form-select" + (" is-invalid" if form.medicine_id.errors else "")) }}
+                                {% for error in form.medicine_id.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.quantity.label(class="form-label") }}
+                                {{ form.quantity(class="form-control" + (" is-invalid" if form.quantity.errors else ""), type="number") }}
+                                {% for error in form.quantity.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ form.instructions.label(class="form-label") }}
+                                {{ form.instructions(class="form-control" + (" is-invalid" if form.instructions.errors else ""), rows=3) }}
+                                {% for error in form.instructions.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Add Medicine
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

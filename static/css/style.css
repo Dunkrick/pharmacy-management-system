@@ -1,0 +1,161 @@
+/* Custom styles for Pharmacy Management System */
+
+.jumbotron {
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background-color: #e9ecef;
+    border-radius: .3rem;
+}
+
+.navbar {
+    margin-bottom: 1rem;
+}
+
+.alert {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* General styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Table styles */
+.table-responsive {
+    margin-bottom: 1rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+/* Stock quantity badges */
+.badge.bg-danger {
+    font-size: 0.9em;
+}
+
+.badge.bg-warning {
+    font-size: 0.9em;
+}
+
+.badge.bg-success {
+    font-size: 0.9em;
+}
+
+/* Search form */
+.search-form {
+    margin-bottom: 2rem;
+}
+
+/* Card styles */
+.card {
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Button styles */
+.btn-group {
+    margin: 0.2rem;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
+/* Alert styles */
+.alert {
+    margin-bottom: 1rem;
+}
+
+/* Navigation */
+.navbar {
+    margin-bottom: 2rem;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+}
+
+/* Pagination */
+.pagination {
+    margin-bottom: 2rem;
+}
+
+/* Modal styles */
+.modal-header {
+    background-color: #f8f9fa;
+}
+
+/* Utility classes */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9em;
+    }
+    
+    .btn-sm {
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn i {
+    font-size: 1.1em;
+} 
