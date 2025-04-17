@@ -4,9 +4,6 @@ from flask_migrate import Migrate
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
-from commands import create_admin
-from sqlalchemy import create_engine
-from sqlalchemy.pool import QueuePool
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -58,22 +55,26 @@ def create_app():
         app.register_blueprint(auth_blueprint)
         
         # Ensure database exists
-        if not os.path.exists(db_path):
-            logger.info("Database does not exist. Creating...")
-            db.create_all()
+        if not os.path.exists('instance'):
+            os.makedirs('instance')
             
-            # Create admin user if it doesn't exist
-            admin = User.query.filter_by(username='admin').first()
-            if not admin:
-                admin = User(
-                    username='admin',
-                    email='admin@pharmacy.com',
-                    is_admin=True
-                )
-                admin.set_password('admin123')
-                db.session.add(admin)
-                db.session.commit()
-                logger.info("Admin user created")
+        # Create database and tables
+        db.create_all()
+            
+        # Create admin user if it doesn't exist
+        admin = User.query.filter_by(username='admin').first()
+        if not admin:
+            admin = User(
+                username='admin',
+                email='admin@pharmacy.com',
+                is_admin=True
+            )
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+            logger.info("Admin user created")
+        else:
+            logger.info("Admin user already exists")
     
     # Template filters
     @app.template_filter('current_year')
@@ -85,9 +86,6 @@ def create_app():
         def now():
             return datetime.now()
         return dict(now=now)
-    
-    # Register the command
-    app.cli.add_command(create_admin)
     
     if not app.debug:
         if not os.path.exists('logs'):
