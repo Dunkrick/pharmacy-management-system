@@ -3,6 +3,11 @@ from extensions import db, login_manager, migrate, csrf
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from commands import create_admin
+from sqlalchemy import create_engine
+from sqlalchemy.pool import QueuePool
+import logging
+from logging.handlers import RotatingFileHandler
 
 # Load environment variables
 load_dotenv()
@@ -16,6 +21,13 @@ def create_app():
     db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'pharmacy.db')
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 10,
+        'max_overflow': 20,
+        'pool_timeout': 30,
+        'pool_recycle': 1800,
+    }
     
     # Initialize extensions
     db.init_app(app)
@@ -48,6 +60,27 @@ def create_app():
         def now():
             return datetime.now()
         return dict(now=now)
+    
+    # Register the command
+    app.cli.add_command(create_admin)
+    
+    if not app.debug:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/pharmacy.log', maxBytes=10240, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Pharmacy startup')
+    
+    @app.after_request
+    def add_header(response):
+        if 'Cache-Control' not in response.headers:
+            response.headers['Cache-Control'] = 'public, max-age=300'
+        return response
     
     return app
 

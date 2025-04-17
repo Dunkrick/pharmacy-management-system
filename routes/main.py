@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required
 from models import Medicine, Customer, Employee, Prescription, Sale, PrescriptionItem
 from forms import MedicineForm, CustomerForm, EmployeeForm, PrescriptionForm, SaleForm
-from extensions import db
+from extensions import db, limiter
 from sqlalchemy import or_, desc
 from datetime import datetime
 # Import your other dependencies
@@ -27,6 +27,7 @@ def index():
 
 @main.route('/medicines')
 @login_required
+@limiter.limit("60 per minute")  # Adjust rate as needed
 def medicines():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
@@ -65,24 +66,31 @@ def medicines():
 def new_medicine():
     form = MedicineForm()
     if form.validate_on_submit():
-        medicine = Medicine(
-            name=form.name.data,
-            description=form.description.data,
-            manufacturer=form.manufacturer.data,
-            category=form.category.data,
-            price=form.price.data,
-            expiry_date=form.expiry_date.data,
-            stock_quantity=form.stock_quantity.data,
-            reorder_level=form.reorder_level.data
-        )
-        db.session.add(medicine)
         try:
+            medicine = Medicine(
+                name=form.name.data,
+                description=form.description.data,
+                manufacturer=form.manufacturer.data,
+                category=form.category.data,
+                price=form.price.data,
+                stock_quantity=form.stock_quantity.data,
+                reorder_level=form.reorder_level.data,
+                expiry_date=form.expiry_date.data
+            )
+            db.session.add(medicine)
             db.session.commit()
             flash('Medicine added successfully!', 'success')
             return redirect(url_for('main.medicines'))
         except Exception as e:
             db.session.rollback()
-            flash('An error occurred while adding the medicine.', 'danger')
+            flash(f'Error adding medicine: {str(e)}', 'danger')
+            print(f"Error: {str(e)}")  # For debugging
+    
+    # If there are form errors, flash them
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field}: {error}', 'danger')
     
     return render_template('medicine_form.html', form=form, title='New Medicine')
 

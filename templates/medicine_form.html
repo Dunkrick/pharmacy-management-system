@@ -3,100 +3,119 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="card-title mb-0">{{ title }}</h2>
-            </div>
-            <div class="card-body">
-                <form method="POST" novalidate>
-                    {{ form.csrf_token }}
-                    
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.name.label(class="form-label") }}
-                                {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else "")) }}
-                                {% for error in form.name.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">{{ title }}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" novalidate>
+                        {{ form.csrf_token }}
                         
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.manufacturer.label(class="form-label") }}
-                                {{ form.manufacturer(class="form-control" + (" is-invalid" if form.manufacturer.errors else "")) }}
-                                {% for error in form.manufacturer.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
+                        <div class="mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control") }}
+                            {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.category.label(class="form-label") }}
-                                {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
-                                {% for error in form.category.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.price.label(class="form-label") }}
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    {{ form.price(class="form-control" + (" is-invalid" if form.price.errors else "")) }}
-                                    {% for error in form.price.errors %}
-                                        <div class="invalid-feedback">{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.expiry_date.label(class="form-label") }}
-                                {{ form.expiry_date(class="form-control" + (" is-invalid" if form.expiry_date.errors else ""), type="date") }}
-                                {% for error in form.expiry_date.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                {{ form.stock_quantity.label(class="form-label") }}
-                                {{ form.stock_quantity(class="form-control" + (" is-invalid" if form.stock_quantity.errors else ""), type="number") }}
-                                {% for error in form.stock_quantity.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.description.label(class="form-label") }}
-                                {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=3) }}
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control", rows=3) }}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
                                 {% for error in form.description.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
+                                    {{ error }}
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
-                    </div>
 
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i> Save Medicine
-                        </button>
-                        <a href="{{ url_for('main.medicines') }}" class="btn btn-secondary">
-                            <i class="fas fa-times me-1"></i> Cancel
-                        </a>
-                    </div>
-                </form>
+                        <div class="mb-3">
+                            {{ form.manufacturer.label(class="form-label") }}
+                            {{ form.manufacturer(class="form-control") }}
+                            {% if form.manufacturer.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.manufacturer.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.category.label(class="form-label") }}
+                            {{ form.category(class="form-control") }}
+                            {% if form.category.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.price.label(class="form-label") }}
+                            {{ form.price(class="form-control", type="number", step="0.01", min="0") }}
+                            {% if form.price.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.price.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.stock_quantity.label(class="form-label") }}
+                            {{ form.stock_quantity(class="form-control", type="number", min="0") }}
+                            {% if form.stock_quantity.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.stock_quantity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.reorder_level.label(class="form-label") }}
+                            {{ form.reorder_level(class="form-control", type="number", min="0") }}
+                            {% if form.reorder_level.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.reorder_level.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.expiry_date.label(class="form-label") }}
+                            {{ form.expiry_date(class="form-control", type="date") }}
+                            {% if form.expiry_date.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.expiry_date.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.medicines') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
