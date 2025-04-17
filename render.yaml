@@ -3,7 +3,7 @@ services:
     name: pharmacy-management
     env: python
     buildCommand: chmod +x deploy.sh && ./deploy.sh
-    startCommand: gunicorn wsgi:app
+    startCommand: gunicorn wsgi:app --log-level debug
     python_version: 3.11.11
     envVars:
       - key: PYTHON_VERSION
@@ -13,4 +13,5 @@ services:
       - key: FLASK_ENV
         value: production
       - key: SECRET_KEY
-        generateValue: true 
+        generateValue: true
+    healthCheckPath: /auth/login 

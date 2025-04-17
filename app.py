@@ -33,13 +33,8 @@ def create_app():
     app.config['WTF_CSRF_SSL_STRICT'] = False  # Added for testing
     
     # Database configuration
-    if os.environ.get('DATABASE_URL'):
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-    else:
-        # Local SQLite database
-        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'pharmacy.db')
-        app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-    
+    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'pharmacy.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # Initialize extensions
@@ -62,9 +57,23 @@ def create_app():
         app.register_blueprint(main_blueprint)
         app.register_blueprint(auth_blueprint)
         
-        # Create database tables
-        db.create_all()
-        logger.info("Database tables created")
+        # Ensure database exists
+        if not os.path.exists(db_path):
+            logger.info("Database does not exist. Creating...")
+            db.create_all()
+            
+            # Create admin user if it doesn't exist
+            admin = User.query.filter_by(username='admin').first()
+            if not admin:
+                admin = User(
+                    username='admin',
+                    email='admin@pharmacy.com',
+                    is_admin=True
+                )
+                admin.set_password('admin123')
+                db.session.add(admin)
+                db.session.commit()
+                logger.info("Admin user created")
     
     # Template filters
     @app.template_filter('current_year')

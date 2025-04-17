@@ -46,4 +46,13 @@ instance/
 
 # OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+logs/ 

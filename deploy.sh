@@ -6,21 +6,17 @@ echo "Starting deployment process..."
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
-# Remove existing database and migrations
-echo "Cleaning up existing database..."
-rm -f instance/pharmacy.db
-rm -rf migrations
+# Create instance directory if it doesn't exist
+mkdir -p instance
 
-# Initialize database
-echo "Initializing database..."
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
+# Clean up unnecessary files
+echo "Cleaning up unnecessary files..."
+python cleanup.py
 
-# Create admin user
-echo "Creating admin user..."
-python create_admin.py
+# Initialize database and create admin user
+echo "Initializing database and creating admin user..."
+python init_db.py
 
 # Start the application
 echo "Starting application..."
-gunicorn wsgi:app 
+gunicorn wsgi:app --log-level debug 

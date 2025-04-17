@@ -16,8 +16,13 @@ def login():
     
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
         logger.info(f"Login attempt for user: {form.username.data}")
+        
+        user = User.query.filter_by(username=form.username.data).first()
+        
+        # Log all users in database for debugging
+        all_users = User.query.all()
+        logger.info(f"All users in database: {[u.username for u in all_users]}")
         
         if user is None:
             logger.warning(f"User not found: {form.username.data}")
