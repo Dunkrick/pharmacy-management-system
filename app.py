@@ -1,7 +1,7 @@
 from flask import Flask
 from extensions import db, login_manager, migrate, csrf
 from flask_migrate import Migrate
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 from commands import create_admin
@@ -18,6 +18,11 @@ def create_app():
     
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=60)
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1 hour
     
     # Database configuration
     if os.environ.get('DATABASE_URL'):
@@ -79,9 +84,13 @@ def create_app():
         app.logger.info('Pharmacy startup')
     
     @app.after_request
-    def add_header(response):
-        if 'Cache-Control' not in response.headers:
-            response.headers['Cache-Control'] = 'public, max-age=300'
+    def after_request(response):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
         return response
     
     return app
