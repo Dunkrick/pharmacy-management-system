@@ -10,6 +10,13 @@ from sqlalchemy.pool import QueuePool
 import logging
 from logging.handlers import RotatingFileHandler
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Load environment variables
 load_dotenv()
 
@@ -23,6 +30,7 @@ def create_app():
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1 hour
+    app.config['WTF_CSRF_SSL_STRICT'] = False  # Added for testing
     
     # Database configuration
     if os.environ.get('DATABASE_URL'):
@@ -56,6 +64,7 @@ def create_app():
         
         # Create database tables
         db.create_all()
+        logger.info("Database tables created")
     
     # Template filters
     @app.template_filter('current_year')

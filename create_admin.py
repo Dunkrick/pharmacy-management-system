@@ -1,29 +1,48 @@
 from app import create_app
 from extensions import db
 from models import User
+import logging
 
-def create_admin_user(username, email, password):
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def create_admin_user():
     app = create_app()
+    
     with app.app_context():
-        # Check if admin already exists
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            print(f"User {username} already exists!")
-            return
-
-        # Create new admin user
         try:
-            admin = User(
-                username=username,
-                email=email,
-                is_admin=True
-            )
-            admin.set_password(password)
-            db.session.add(admin)
-            db.session.commit()
-            print(f"Admin user {username} created successfully!")
+            # Check if admin exists
+            admin = User.query.filter_by(username='admin').first()
+            
+            if admin:
+                logger.info("Admin user already exists")
+                # Update admin password
+                admin.set_password('admin123')
+                db.session.commit()
+                logger.info("Admin password updated")
+            else:
+                # Create new admin user
+                admin = User(
+                    username='admin',
+                    email='admin@pharmacy.com',
+                    is_admin=True
+                )
+                admin.set_password('admin123')
+                db.session.add(admin)
+                db.session.commit()
+                logger.info("Admin user created successfully")
+            
+            # Verify admin user
+            admin = User.query.filter_by(username='admin').first()
+            if admin and admin.check_password('admin123'):
+                logger.info("Admin credentials verified successfully")
+            else:
+                logger.error("Admin credentials verification failed")
+                
         except Exception as e:
-            print(f"Error creating admin user: {str(e)}")
+            logger.error(f"Error creating admin user: {str(e)}")
+            db.session.rollback()
+            raise
 
 if __name__ == '__main__':
-    create_admin_user('admin', 'admin@example.com', 'admin123') 
+    create_admin_user() 

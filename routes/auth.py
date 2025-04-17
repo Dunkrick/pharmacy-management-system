@@ -4,8 +4,10 @@ from werkzeug.urls import url_parse
 from models import User
 from forms import LoginForm, RegistrationForm
 from extensions import db
+import logging
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
+logger = logging.getLogger(__name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -15,11 +17,21 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user is None or not user.check_password(form.password.data):
+        logger.info(f"Login attempt for user: {form.username.data}")
+        
+        if user is None:
+            logger.warning(f"User not found: {form.username.data}")
+            flash('Invalid username or password', 'danger')
+            return redirect(url_for('auth.login'))
+            
+        if not user.check_password(form.password.data):
+            logger.warning(f"Invalid password for user: {form.username.data}")
             flash('Invalid username or password', 'danger')
             return redirect(url_for('auth.login'))
         
         login_user(user, remember=form.remember_me.data)
+        logger.info(f"Successful login for user: {user.username}")
+        
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
