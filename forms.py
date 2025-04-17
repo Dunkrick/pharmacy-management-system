@@ -89,8 +89,12 @@ class PrescriptionForm(FlaskForm):
 class SaleForm(FlaskForm):
     customer_id = SelectField('Customer', coerce=int, validators=[DataRequired()])
     medicine_id = SelectField('Medicine', coerce=int, validators=[DataRequired()])
-    quantity = IntegerField('Quantity', validators=[DataRequired(), NumberRange(min=1)])
-    sale_date = DateField('Sale Date', validators=[DataRequired()], default=date.today)
+    employee_id = SelectField('Employee', coerce=int, validators=[DataRequired()])
+    quantity = IntegerField('Quantity', validators=[
+        DataRequired(),
+        NumberRange(min=1, message='Quantity must be at least 1')
+    ])
+    sale_date = DateField('Sale Date', default=date.today, validators=[DataRequired()])
 
 class PrescriptionItemForm(BaseForm):
     medicine_id = SelectField('Medicine',

@@ -381,38 +381,49 @@ def sales():
 @login_required
 def new_sale():
     form = SaleForm()
-    # Populate customer and medicine choices
-    form.customer_id.choices = [(c.id, c.name) for c in Customer.query.order_by(Customer.name).all()]
-    form.medicine_id.choices = [(m.id, f"{m.name} (Stock: {m.stock_quantity})") 
-                              for m in Medicine.query.order_by(Medicine.name).all()]
     
+    # Populate form choices
+    form.customer_id.choices = [(c.id, c.name) for c in Customer.query.order_by(Customer.name).all()]
+    form.medicine_id.choices = [(m.id, f"{m.name} - Stock: {m.stock_quantity}") 
+                              for m in Medicine.query.filter(Medicine.stock_quantity > 0).order_by(Medicine.name).all()]
+    form.employee_id.choices = [(e.id, e.name) for e in Employee.query.order_by(Employee.name).all()]
+
     if form.validate_on_submit():
-        medicine = Medicine.query.get(form.medicine_id.data)
-        if medicine.stock_quantity < form.quantity.data:
-            flash('Not enough stock available.', 'danger')
-            return render_template('sale_form.html', form=form, title='New Sale')
-        
-        sale = Sale(
-            customer_id=form.customer_id.data,
-            medicine_id=form.medicine_id.data,
-            quantity=form.quantity.data,
-            sale_date=form.sale_date.data,
-            unit_price=medicine.price,
-            total_amount=medicine.price * form.quantity.data
-        )
-        
-        # Update medicine stock
-        medicine.stock_quantity -= form.quantity.data
-        
-        db.session.add(sale)
         try:
+            # Get the medicine to check stock and price
+            medicine = Medicine.query.get_or_404(form.medicine_id.data)
+            
+            # Validate stock availability
+            if medicine.stock_quantity < form.quantity.data:
+                flash(f'Not enough stock. Only {medicine.stock_quantity} units available.', 'danger')
+                return render_template('sale_form.html', form=form, title='New Sale')
+
+            # Create new sale
+            sale = Sale(
+                customer_id=form.customer_id.data,
+                medicine_id=form.medicine_id.data,
+                employee_id=form.employee_id.data,
+                quantity=form.quantity.data,
+                unit_price=medicine.price,
+                total_amount=medicine.price * form.quantity.data,
+                sale_date=form.sale_date.data or datetime.now().date()
+            )
+
+            # Update medicine stock
+            medicine.stock_quantity -= form.quantity.data
+
+            # Save changes
+            db.session.add(sale)
             db.session.commit()
-            flash('Sale recorded successfully!', 'success')
+
+            flash('Sale created successfully!', 'success')
             return redirect(url_for('main.sales'))
+
         except Exception as e:
             db.session.rollback()
-            flash('An error occurred while recording the sale.', 'danger')
-    
+            flash(f'Error creating sale: {str(e)}', 'danger')
+            app.logger.error(f'Error creating sale: {str(e)}')
+
     return render_template('sale_form.html', form=form, title='New Sale')
 
 @main.route('/sales/<int:id>/edit', methods=['GET', 'POST'])

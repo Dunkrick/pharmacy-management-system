@@ -3,73 +3,83 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title mb-0">{{ title }}</h3>
-                </div>
-                <div class="card-body">
-                    <form method="POST">
-                        {{ form.csrf_token }}
-                        
-                        <div class="mb-3">
-                            {{ form.customer_id.label(class="form-label") }}
-                            {{ form.customer_id(class="form-select") }}
-                            {% if form.customer_id.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.customer_id.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.medicine_id.label(class="form-label") }}
-                            {{ form.medicine_id(class="form-select") }}
-                            {% if form.medicine_id.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.medicine_id.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.quantity.label(class="form-label") }}
-                            {{ form.quantity(class="form-control", type="number", min="1") }}
-                            {% if form.quantity.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.quantity.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form.sale_date.label(class="form-label") }}
-                            {{ form.sale_date(class="form-control", type="date") }}
-                            {% if form.sale_date.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in form.sale_date.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('main.sales') }}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
-                </div>
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    <form method="POST" class="needs-validation" novalidate>
+        {{ form.csrf_token }}
+        
+        <div class="mb-3">
+            <label for="customer_id" class="form-label">Customer</label>
+            {{ form.customer_id(class="form-select") }}
+            {% if form.customer_id.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.customer_id.errors %}
+                {{ error }}
+                {% endfor %}
             </div>
+            {% endif %}
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label for="medicine_id" class="form-label">Medicine</label>
+            {{ form.medicine_id(class="form-select") }}
+            {% if form.medicine_id.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.medicine_id.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="employee_id" class="form-label">Employee</label>
+            {{ form.employee_id(class="form-select") }}
+            {% if form.employee_id.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.employee_id.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            {{ form.quantity(class="form-control", type="number", min="1") }}
+            {% if form.quantity.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.quantity.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="sale_date" class="form-label">Sale Date</label>
+            {{ form.sale_date(class="form-control", type="date") }}
+            {% if form.sale_date.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.sale_date.errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Sale</button>
+        <a href="{{ url_for('main.sales') }}" class="btn btn-secondary">Cancel</a>
+    </form>
 </div>
+
+<script>
+// Add JavaScript to update total amount when quantity changes
+document.getElementById('quantity').addEventListener('change', function() {
+    const medicineSelect = document.getElementById('medicine_id');
+    const selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
+    const quantity = this.value;
+    // You can add logic here to display the total amount
+});
+</script>
 {% endblock %} 
