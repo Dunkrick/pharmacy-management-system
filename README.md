@@ -117,9 +117,3 @@ flask run
 3. Login with default admin credentials:
 - Username: admin
 - Password: admin123
-
-<<<<<<< HEAD
-## Project Structure 
-=======
-## Project Structure
->>>>>>> 32a4563b09d003dca52473ca279fd03a46933ae0
